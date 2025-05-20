@@ -1,0 +1,42 @@
+/* UserList.css */
+/* .user-list-container can be used if UserList component had a root div, currently it uses React.Fragment <> */
+
+.user-list-header {
+  font-size: 1.1rem; /* Adjusted to match general h2 styling in App.css */
+  font-weight: 600;
+  color: #495057; /* Synced with general h2 */
+  padding: 15px; /* Uniform padding */
+  margin: 0;
+  border-bottom: 1px solid #dee2e6; /* Synced with general h2 */
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.user-list {
+  list-style-type: none;
+  padding: 0; /* Remove padding, items will have their own */
+  margin: 0;
+  overflow-y: auto; /* Scroll for user list if it gets too long */
+  flex-grow: 1; /* Allow list to take available space in flex container (user-list-column) */
+}
+
+.user-list-item {
+  padding: 10px 5px; /* Padding inside each list item */
+  border-bottom: 1px solid #f0f0f0; /* Separator for items */
+  font-size: 0.95rem;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.user-list-item:last-child {
+  border-bottom: none; /* No border for the last item */
+}
+
+.user-list-item:hover {
+  background-color: #f7f7f7; /* Slight hover effect */
+}
+
+.user-list-item.active-user { /* Example class for an active/selected user */
+  background-color: #e0e0e0;
+  font-weight: bold;
+}

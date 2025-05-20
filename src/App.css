@@ -1,0 +1,102 @@
+html, body, #root, .App {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f7f6;
+  color: #333;
+  overflow: hidden; /* Prevent body scrollbars when app manages scrolling */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  /* text-align: center; */ /* Removed as it might interfere with component alignment */
+}
+
+.app-header {
+  background-color: #007bff; /* Updated header color */
+  padding: 15px 20px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1000; /* Ensure header is above other content */
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.app-content-wrapper {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden; /* This is key for child components to manage their own scroll */
+}
+
+.app-footer {
+  background-color: #343a40; /* Darker footer */
+  padding: 10px 20px;
+  color: white;
+  text-align: center;
+  font-size: 0.85em;
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+/* ChatApp layout classes - these remain largely the same but are used by ChatApp.js */
+.chat-container {
+  display: flex;
+  flex-grow: 1; /* ChatApp takes all available space in app-content-wrapper */
+  background-color: #fff;
+  overflow: hidden; /* Important for internal layout management */
+}
+
+.user-list-column {
+  width: 25%;
+  min-width: 200px; /* Minimum width */
+  max-width: 300px; /* Max width for user list */
+  border-right: 1px solid #ddd;
+  background-color: #f8f9fa; /* Slightly different background for user list area */
+  display: flex; /* To allow UserList component to grow if needed */
+  flex-direction: column;
+  overflow-y: hidden; /* UserList itself will scroll its content */
+}
+
+.message-area-column {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /* No padding here, padding will be on MessageList and MessageInput wrappers if needed */
+  background-color: #fff; /* Main chat area background */
+  overflow: hidden; /* Key for MessageList scrolling and MessageInput fixed */
+}
+
+.message-list-wrapper {
+  flex-grow: 1;
+  overflow-y: auto; /* Enables scrolling for messages */
+  padding: 20px; /* Padding around the messages area */
+  background-color: #f7f7f7; /* Background for the message list area */
+}
+
+/* Ensure h2 in MessageList is styled or removed */
+.message-list-container h2 {
+  display: none; /* Assuming the "Messages" title is not desired or handled elsewhere */
+}
+
+/* Styling for h2 in UserList is in UserList.css */
+/* General h2 styling (if any other h2 exists) */
+h2 {
+  font-size: 1.1rem;
+  color: #495057;
+  margin-top: 0; /* Removing default margin for headings inside components */
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
