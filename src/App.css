@@ -1,14 +1,26 @@
-html, body, #root, .App {
+:root {
+  --whatsapp-green: #075E54;
+  --whatsapp-light-green: #128C7E;
+  --whatsapp-message-green: #DCF8C6; /* User's own messages */
+  --whatsapp-white: #FFFFFF;
+  --whatsapp-light-grey: #F1F0F0; /* For elements like footer or dividers */
+  --whatsapp-chat-bg: #E5DDD5; /* Main chat background */
+  --whatsapp-text-dark: #333333;
+  --whatsapp-text-light: #777777;
+  --whatsapp-text-very-dark: #000000; /* For primary text on light backgrounds */
+  --whatsapp-border-light: #D1D7DB;
+}
+
+html, body, #root { /* #root is typical for CRA */
   height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f4f7f6;
-  color: #333;
-  overflow: hidden; /* Prevent body scrollbars when app manages scrolling */
+  /* Body background is set here for global effect, or in public/index.html */
+  background-color: var(--whatsapp-chat-bg); /* Default background for the page */
+  color: var(--whatsapp-text-dark);
+  overflow: hidden;
 }
 
 code {
@@ -17,86 +29,123 @@ code {
 }
 
 .App {
+  height: 100%; /* Ensure App takes full height */
   display: flex;
   flex-direction: column;
-  /* text-align: center; */ /* Removed as it might interfere with component alignment */
+  background-color: var(--whatsapp-chat-bg); /* App container gets chat bg */
 }
 
 .app-header {
-  background-color: #007bff; /* Updated header color */
-  padding: 15px 20px;
-  color: white;
-  text-align: center;
+  background-color: var(--whatsapp-green);
+  padding: 0 15px; /* Adjusted padding, vertical handled by height and align-items */
+  color: var(--whatsapp-white);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  z-index: 1000; /* Ensure header is above other content */
+  z-index: 1000;
+  height: 60px; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Key for left/right alignment of content */
 }
 
-.app-header h1 {
-  margin: 0;
-  font-size: 1.5rem;
+.contact-info {
+  display: flex;
+  align-items: center;
+  /* Add styles for avatar if implemented */
 }
+
+.contact-name {
+  font-size: 1.1rem; /* WhatsApp contact name font size */
+  font-weight: 500; /* Medium weight */
+  margin-left: 10px; /* Space for avatar if one were present */
+}
+
+/* Optional: .contact-status styling if added */
+
+.header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.header-icon-button { /* Re-styling existing button or new span/div elements */
+  background: none;
+  border: none;
+  color: var(--whatsapp-white);
+  font-size: 1.4rem; /* Size for Unicode icons */
+  padding: 0 8px; /* Spacing around icons */
+  cursor: pointer;
+  margin-left: 10px; /* Space between icons */
+}
+
+.header-icon-button:hover {
+  opacity: 0.8; /* Simple hover effect */
+}
+
+/* Remove h1 styling if no longer used or adjust if still part of contact-info */
+.app-header h1 { 
+  display: none; /* Assuming h1 is replaced by contact-name span */
+}
+
 
 .app-content-wrapper {
   display: flex;
   flex-grow: 1;
-  overflow: hidden; /* This is key for child components to manage their own scroll */
+  overflow: hidden;
+  /* This wrapper will also have the chat background, inherited from .App or body */
 }
 
 .app-footer {
-  background-color: #343a40; /* Darker footer */
-  padding: 10px 20px;
-  color: white;
+  background-color: var(--whatsapp-light-grey);
+  padding: 12px 20px;
+  color: var(--whatsapp-text-dark);
   text-align: center;
   font-size: 0.85em;
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 -1px 3px rgba(0,0,0,0.08);
+  height: 40px; /* Typical footer height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ChatApp layout classes - these remain largely the same but are used by ChatApp.js */
+/* ChatApp layout classes */
 .chat-container {
   display: flex;
-  flex-grow: 1; /* ChatApp takes all available space in app-content-wrapper */
-  background-color: #fff;
-  overflow: hidden; /* Important for internal layout management */
+  flex-grow: 1;
+  overflow: hidden;
+  /* background-color: var(--whatsapp-white); /* If messages area needs a different bg than chat-bg */
 }
 
 .user-list-column {
-  width: 25%;
-  min-width: 200px; /* Minimum width */
-  max-width: 300px; /* Max width for user list */
-  border-right: 1px solid #ddd;
-  background-color: #f8f9fa; /* Slightly different background for user list area */
-  display: flex; /* To allow UserList component to grow if needed */
-  flex-direction: column;
-  overflow-y: hidden; /* UserList itself will scroll its content */
+  display: none; /* Hide the user list column */
 }
 
 .message-area-column {
   flex-grow: 1;
+  flex-basis: 100%; /* Ensure it takes full width now */
   display: flex;
   flex-direction: column;
-  /* No padding here, padding will be on MessageList and MessageInput wrappers if needed */
-  background-color: #fff; /* Main chat area background */
-  overflow: hidden; /* Key for MessageList scrolling and MessageInput fixed */
+  background-color: transparent; /* Let parent background show */
+  overflow: hidden;
 }
 
 .message-list-wrapper {
   flex-grow: 1;
-  overflow-y: auto; /* Enables scrolling for messages */
-  padding: 20px; /* Padding around the messages area */
-  background-color: #f7f7f7; /* Background for the message list area */
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--whatsapp-chat-bg); /* Ensure this uses the correct chat background */
+  /* Example for subtle pattern (optional, requires an actual image asset): */
+  /* background-image: url('/path-to-whatsapp-like-pattern.png'); */
 }
 
-/* Ensure h2 in MessageList is styled or removed */
-.message-list-container h2 {
-  display: none; /* Assuming the "Messages" title is not desired or handled elsewhere */
-}
-
-/* Styling for h2 in UserList is in UserList.css */
-/* General h2 styling (if any other h2 exists) */
+/* Styling for h2 elements (e.g., "Users" or "Messages" if they were visible) */
 h2 {
   font-size: 1.1rem;
-  color: #495057;
-  margin-top: 0; /* Removing default margin for headings inside components */
+  color: var(--whatsapp-text-dark);
+  margin-top: 0;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--whatsapp-border-light);
+}
+
+/* Hide the h2 in MessageList as per previous step, can be removed if h2 is gone from component */
+.message-list-container h2 {
+  display: none;
 }

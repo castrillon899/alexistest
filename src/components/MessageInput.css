@@ -1,41 +1,81 @@
+/* Uses CSS variables defined in App.css */
 .message-input-form {
   display: flex;
-  padding: 10px;
-  background-color: #f0f0f0; /* Light background for the input area */
-  border-top: 1px solid #ddd;
+  align-items: center;
+  padding: 8px 10px; /* Slightly adjusted padding */
+  background-color: var(--whatsapp-light-grey, #f0f0f0);
+  border-top: 1px solid var(--whatsapp-border-light, #d1d7db);
+  min-height: 50px; /* Ensure a minimum height */
+}
+
+.icon-button { /* Common style for icon buttons */
+  background: none;
+  border: none;
+  color: var(--whatsapp-text-light, #777);
+  font-size: 1.5rem; /* Size for Unicode icons */
+  padding: 0 10px; /* Padding around icons */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  color: var(--whatsapp-text-dark, #333);
+}
+
+.message-input-wrapper { /* Wrapper for input field and emoji icon */
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  background-color: var(--whatsapp-white);
+  border: 1px solid var(--whatsapp-border-light, #ccc);
+  border-radius: 22px; /* Pill shape */
+  padding-left: 12px; /* Padding for text input area */
+  margin: 0 8px; /* Margin around the input wrapper */
 }
 
 .message-input-field {
   flex-grow: 1;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 20px; /* Rounded input field */
-  margin-right: 10px;
-  font-size: 1rem;
+  border: none; /* Border is on the wrapper now */
+  padding: 10px 0; /* Vertical padding, horizontal handled by wrapper/emoji */
+  font-size: 0.95rem;
+  background-color: transparent; /* Input is transparent, wrapper has bg */
+  color: var(--whatsapp-text-very-dark);
 }
 
 .message-input-field:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Emoji button inside the input wrapper */
+.message-input-wrapper .icon-button {
+  padding: 0 12px 0 8px; /* Specific padding for emoji icon */
+  font-size: 1.4rem; /* Slightly smaller emoji icon */
 }
 
 .message-send-button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  background-color: var(--whatsapp-light-green);
+  color: var(--whatsapp-white);
   border: none;
-  border-radius: 20px; /* Rounded button */
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem; /* Adjusted for Unicode char like ➢ or ✈ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s ease-in-out;
+  flex-shrink: 0; /* Prevent send button from shrinking */
 }
 
 .message-send-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: var(--whatsapp-green);
 }
 
 .message-send-button:disabled {
-  background-color: #aaa;
+  background-color: #B0B0B0;
   cursor: not-allowed;
 }

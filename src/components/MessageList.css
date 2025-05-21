@@ -1,57 +1,134 @@
+/* Uses CSS variables defined in App.css */
 .message-item {
-  margin-bottom: 12px;
-  padding: 10px 15px;
-  border-radius: 18px;
-  max-width: 75%;
+  padding: 6px 9px; /* WhatsApp's typical padding */
+  border-radius: 7.5px; /* WhatsApp specific radius */
+  max-width: 70%;
   word-wrap: break-word;
-  line-height: 1.4;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  line-height: 1.35; /* Adjusted line height */
+  box-shadow: 0 1px 0.5px rgba(11,20,26,0.13); /* WhatsApp specific shadow */
+  margin-bottom: 8px;
+  position: relative;
+  display: flex; /* Use flex to better control content layout */
+  flex-direction: column; /* Stack text and timestamp vertically */
 }
 
 .message-item.current-user {
-  background-color: #007bff; /* Blue for current user */
-  color: white;
+  background-color: var(--whatsapp-message-green);
+  color: var(--whatsapp-text-very-dark);
   margin-left: auto;
-  text-align: right;
-  border-bottom-right-radius: 4px; /* Slightly different shape */
 }
 
+.message-item.current-user::after {
+  content: '';
+  position: absolute;
+  top: 0px; /* Align with the top of the bubble */
+  right: -6px; /* Position the tail to the right */
+  width: 12px; /* Width of the tail base */
+  height: 12px; /* Height of the tail base */
+  background-color: var(--whatsapp-message-green);
+  /* Create a triangle shape - this is a common technique but might need refinement */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0); /* Basic right-pointing triangle, simplified */
+  /* A more accurate WhatsApp tail is a small SVG-like shape or a more complex clip-path */
+  /* For simplicity, using a skewed square or a clip-path that approximates the tail */
+  /* Below is a more WhatsApp-like tail using clip-path, but might be complex to get perfect */
+  /* clip-path: path('M0,0 L12,0 L12,12 L0,0 Z'); // Placeholder, needs actual path */
+  /* Using a simpler method for now: a small rotated square */
+  /* This is a simplified tail. A true WhatsApp tail is more complex. */
+  transform: rotate(45deg); /* This won't work as expected with just background-color */
+  /* A better approach for tail using border, but it's tricky with background color matching */
+  /* Let's use a simpler pseudo element that suggests a tail without perfect shape */
+   border-width: 0; /* Reset border */
+   /* Actual WhatsApp tail is a small, specific shape. Hard to replicate perfectly with pure CSS without SVG. */
+   /* This is a placeholder for the tail, a proper SVG or more complex CSS would be better. */
+   /* For now, we'll use a simple approach that suggests a tail. */
+   /* A common method using borders to create a triangle: */
+   /* This is a simplified visual cue for a tail */
+   width: 0;
+   height: 0;
+   border-style: solid;
+   border-width: 0 0 10px 10px; /* Bottom-left triangle */
+   border-color: transparent transparent var(--whatsapp-message-green) transparent;
+   right: -9px; /* Adjust to connect smoothly */
+   transform: rotate(0deg); /* Reset rotation if any from previous attempts */
+   clip-path: none; /* Reset clip-path */
+   top: 3px; /* Align better with bubble */
+}
+
+
 .message-item.other-user {
-  background-color: #e9ebee; /* Light grey for other users */
-  color: #333;
+  background-color: var(--whatsapp-white);
+  color: var(--whatsapp-text-very-dark);
   margin-right: auto;
-  text-align: left;
-  border-bottom-left-radius: 4px; /* Slightly different shape */
+}
+
+.message-item.other-user::after {
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: -6px; /* Position the tail to the left */
+  width: 12px;
+  height: 12px;
+  background-color: var(--whatsapp-white);
+  /* clip-path: polygon(0 0, 100% 0, 0% 100%, 0 0); /* Basic left-pointing triangle */
+  /* Simplified tail for other users */
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10px 10px 0; /* Bottom-right triangle */
+  border-color: transparent var(--whatsapp-white) transparent transparent;
+  left: -9px;
+  transform: rotate(0deg);
+  clip-path: none;
+  top: 3px;
+}
+
+
+.message-content { /* New wrapper for sender, text, and timestamp info */
+  padding-right: 5px; /* Give a little space for timestamp/ticks */
+}
+
+.message-text {
+  margin-bottom: 2px; /* Reduced margin */
+  font-size: 0.9rem; /* WhatsApp font size is around 14.2px to 14.5px */
+  line-height: 1.3; /* Adjust for readability */
+  color: var(--whatsapp-text-very-dark); /* Ensure text color is consistent */
 }
 
 .message-sender {
-  font-weight: bold;
-  margin-bottom: 4px;
-  font-size: 0.9em;
-}
-
-.message-timestamp {
-  font-size: 0.75em;
-  color: #888; /* Initial color, will be overridden by .current-user */
-  margin-top: 5px;
-  display: block; /* Ensure it takes its own line or space */
+  font-weight: 500; /* WhatsApp sender name is often medium weight */
+  margin-bottom: 2px;
+  font-size: 0.82em; /* Slightly smaller */
+  color: #005045; /* Example of a specific sender name color, can vary */
+  /* color: var(--whatsapp-light-green); Previous color */
+  display: block;
 }
 
 .current-user .message-sender {
-  color: #f0f0f0; /* Lighter sender name for current user message */
-}
-.current-user .message-timestamp {
-  color: #cce5ff; /* Lighter timestamp for current user message */
+  display: none;
 }
 
-.other-user .message-sender {
-  color: #555;
-}
-.other-user .message-timestamp {
-  color: #777;
+.message-meta { /* Container for timestamp and status ticks */
+  display: flex;
+  justify-content: flex-end; /* Align items to the right */
+  align-items: center; /* Vertically align items */
+  margin-top: 1px; /* Reduced top margin */
+  height: 15px; /* Fixed height for metadata line */
 }
 
-/* MessageList component root if it needs specific styling not covered by wrapper */
+.message-timestamp {
+  font-size: 0.68em; /* WhatsApp timestamp is quite small */
+  color: #667781; /* WhatsApp's specific timestamp color (greyish blue) */
+  margin-right: 5px; /* Space between timestamp and ticks */
+}
+
+/* No change needed for .current-user .message-timestamp color, it's globally set now */
+
+.message-status-ticks {
+  font-size: 0.8em; /* Adjust size of ticks */
+  color: #4FC3F7; /* Blue ticks for delivered/read (WhatsApp uses specific SVGs) */
+  /* For simplicity, using text characters. Actual WhatsApp uses SVG icons for ticks. */
+}
+
 .message-list-container {
-  padding-top: 10px; /* Space at the top of the message list */
+  /* Padding is handled by message-list-wrapper in App.css */
 }

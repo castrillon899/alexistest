@@ -4,23 +4,29 @@ import '@testing-library/jest-dom';
 import MessageInput from './MessageInput';
 
 describe('MessageInput', () => {
-  test('renders an input field and a send button', () => {
+  test('renders an input field, placeholder icons, and a send button', () => {
     render(<MessageInput onSendMessage={() => {}} />);
-    expect(screen.getByPlaceholderText('Type your message...')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument();
+    // Check for new placeholder "Type a message"
+    expect(screen.getByPlaceholderText('Type a message')).toBeInTheDocument();
+    // Check for send button by its new aria-label or text content
+    expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument(); 
+    // Check for placeholder icons by aria-label
+    expect(screen.getByRole('button', { name: 'Attach file' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Emoji' })).toBeInTheDocument();
   });
 
   test('input field updates its value on change', () => {
     render(<MessageInput onSendMessage={() => {}} />);
-    const input = screen.getByPlaceholderText('Type your message...');
+    const input = screen.getByPlaceholderText('Type a message');
     fireEvent.change(input, { target: { value: 'Hello there' } });
     expect(input.value).toBe('Hello there');
   });
 
   test('send button is disabled when input is empty and enabled when input has text', () => {
     render(<MessageInput onSendMessage={() => {}} />);
-    const input = screen.getByPlaceholderText('Type your message...');
-    const sendButton = screen.getByRole('button', { name: 'Send' });
+    const input = screen.getByPlaceholderText('Type a message');
+    // Select send button by its aria-label or specific class if needed
+    const sendButton = screen.getByRole('button', { name: 'Send message' });
 
     expect(sendButton).toBeDisabled();
 
@@ -35,30 +41,31 @@ describe('MessageInput', () => {
     const mockOnSendMessage = jest.fn();
     render(<MessageInput onSendMessage={mockOnSendMessage} />);
     
-    const input = screen.getByPlaceholderText('Type your message...');
-    const form = input.closest('form'); // Or use a data-testid on the form
+    const input = screen.getByPlaceholderText('Type a message');
+    const form = input.closest('form');
 
     fireEvent.change(input, { target: { value: 'My new message' } });
-    expect(input.value).toBe('My new message'); // Ensure value is set
+    expect(input.value).toBe('My new message');
 
     fireEvent.submit(form);
     
     expect(mockOnSendMessage).toHaveBeenCalledTimes(1);
-    expect(mockOnSendMessage).toHaveBeenCalledWith('My new message'); // Note: MessageInput internally uses currentUserId='1'
-    expect(input.value).toBe(''); // Input should be cleared
+    // onSendMessage now only takes the message text
+    expect(mockOnSendMessage).toHaveBeenCalledWith('My new message'); 
+    expect(input.value).toBe('');
   });
 
   test('does not call onSendMessage if the input is empty or only whitespace', () => {
     const mockOnSendMessage = jest.fn();
     render(<MessageInput onSendMessage={mockOnSendMessage} />);
     
-    const input = screen.getByPlaceholderText('Type your message...');
+    const input = screen.getByPlaceholderText('Type a message');
     const form = input.closest('form');
 
-    fireEvent.change(input, { target: { value: '   ' } }); // Whitespace only
+    fireEvent.change(input, { target: { value: '   ' } });
     fireEvent.submit(form);
     
     expect(mockOnSendMessage).not.toHaveBeenCalled();
-    expect(input.value).toBe('   '); // Input should not be cleared if message not sent
+    expect(input.value).toBe('   ');
   });
 });

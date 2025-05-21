@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
-import UserList from './UserList';
+// UserList import is removed as it's no longer used
+// import UserList from './UserList'; 
 // import './ChatApp.css'; // If ChatApp.css is created for specific ChatApp styles
 
-const mockUsers = [
+const mockUsersData = [ // Renamed to avoid conflict if 'users' state is needed for other purposes
   { id: '1', name: 'Alice (You)' },
   { id: '2', name: 'Bob' },
   { id: '3', name: 'Charlie' },
@@ -18,11 +19,13 @@ const initialMessages = [
 ];
 
 const ChatApp = () => {
-  const [users, setUsers] = useState(mockUsers);
+  // Users state is kept for now as MessageList needs it to resolve names.
+  // If UserList was the only consumer, this could be simplified.
+  const [users, setUsers] = useState(mockUsersData); 
   const [messages, setMessages] = useState(initialMessages);
   const currentUserId = '1'; // Alice is the current user
 
-  const handleSendMessage = (text) => { // Removed userId from params, as it's fixed to currentUserId
+  const handleSendMessage = (text) => {
     const newMessage = {
       id: `m${Date.now()}`,
       userId: currentUserId,
@@ -36,7 +39,8 @@ const ChatApp = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setMessages((prevMessages) => {
-        const otherUsers = mockUsers.filter(u => u.id !== currentUserId);
+        const otherUsers = users.filter(u => u.id !== currentUserId);
+        if (otherUsers.length === 0) return prevMessages; // No one else to send messages
         const randomUser = otherUsers[Math.floor(Math.random() * otherUsers.length)];
         const newMessage = {
           id: `m${Date.now()}`,
@@ -49,16 +53,12 @@ const ChatApp = () => {
     }, Math.random() * 7000 + 8000); // every 8-15 seconds
 
     return () => clearInterval(intervalId);
-  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
+  }, [users, currentUserId]); // Added users and currentUserId to dependency array
 
   return (
-    // className "chat-container" is styled by App.css to use flex-grow and fill available space
     <div className="chat-container">
-      <div className="user-list-column">
-        <UserList users={users} />
-      </div>
+      {/* UserList column div is removed */}
       <div className="message-area-column">
-        {/* Removed the h2 "Messages" from here, as it was hidden in MessageList.css and not really fitting here */}
         <div className="message-list-wrapper">
           <MessageList messages={messages} users={users} currentUserId={currentUserId} />
         </div>

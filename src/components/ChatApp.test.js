@@ -4,84 +4,101 @@ import '@testing-library/jest-dom';
 import ChatApp from './ChatApp';
 
 // Mock child components to isolate ChatApp logic
+// MessageList mock updated to reflect new timestamp format and structure
 jest.mock('./MessageList', () => ({ messages, users, currentUserId }) => (
   <div data-testid="messagelist">
     {messages.map(msg => (
-      <div key={msg.id} data-testid="message">
-        {msg.text} - {users.find(u => u.id === msg.userId)?.name} ({new Date(msg.timestamp).toLocaleTimeString()})
-        {msg.userId === currentUserId && <span> (You)</span>}
+      <div key={msg.id} data-testid="message" className={msg.userId === currentUserId ? 'current-user' : 'other-user'}>
+        <div className="message-content">
+          {msg.userId !== currentUserId && (
+            <div className="message-sender">{users.find(u => u.id === msg.userId)?.name}</div>
+          )}
+          <div className="message-text">{msg.text}</div>
+          <div className="message-meta">
+            <span className="message-timestamp">
+              {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+            {msg.userId === currentUserId && (
+              <span className="message-status-ticks" data-testid="status-ticks">✓✓</span>
+            )}
+          </div>
+        </div>
       </div>
     ))}
   </div>
 ));
 
+// MessageInput mock updated to reflect that onSendMessage now only takes text
 jest.mock('./MessageInput', () => ({ onSendMessage }) => (
-  <form data-testid="messageinput" onSubmit={(e) => { e.preventDefault(); onSendMessage('Test message'); }}>
-    <input type="text" defaultValue="Test message" />
-    <button type="submit">Send</button>
+  <form data-testid="messageinput" onSubmit={(e) => { e.preventDefault(); onSendMessage('Test message from mock'); }}>
+    <input type="text" defaultValue="Test message from mock" />
+    <button type="submit" aria-label="Send message">➢</button>
   </form>
 ));
 
-jest.mock('./UserList', () => ({ users }) => (
-  <div data-testid="userlist">
-    {users.map(user => <div key={user.id}>{user.name}</div>)}
-  </div>
-));
+// UserList mock is removed as the component is no longer used by ChatApp
+// jest.mock('./UserList', ...);
 
 describe('ChatApp', () => {
   beforeEach(() => {
-    jest.useFakeTimers(); // Use fake timers for setTimeout/setInterval
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
-    jest.useRealTimers(); // Restore real timers
+    jest.useRealTimers();
   });
 
-  test('renders MessageList, MessageInput, and UserList', () => {
+  test('renders MessageList and MessageInput', () => {
     render(<ChatApp />);
     expect(screen.getByTestId('messagelist')).toBeInTheDocument();
     expect(screen.getByTestId('messageinput')).toBeInTheDocument();
-    expect(screen.getByTestId('userlist')).toBeInTheDocument();
+    expect(screen.queryByTestId('userlist')).not.toBeInTheDocument(); // Ensure UserList is not rendered
   });
 
   test('handleSendMessage adds a new message to the messages state', () => {
     render(<ChatApp />);
     
     // Initial messages (from mock data in ChatApp.js)
-    // Alice: "Hey everyone, welcome to the chat!"
+    // Alice (You): "Hey everyone, welcome to the chat!"
     // Bob: "Hi Alice! Glad to be here."
     // Charlie: "Hello!"
-    expect(screen.getAllByTestId('message')).toHaveLength(3);
+    // These are defined in ChatApp.js `initialMessages`
+    const initialMessagesCount = 3; 
+    expect(screen.getAllByTestId('message')).toHaveLength(initialMessagesCount);
 
     // Simulate sending a message via the mocked MessageInput
-    // The mocked MessageInput's submit handler calls onSendMessage('Test message')
     fireEvent.submit(screen.getByTestId('messageinput'));
     
     const messages = screen.getAllByTestId('message');
-    expect(messages).toHaveLength(4);
-    expect(messages[3]).toHaveTextContent('Test message - Alice (You)'); // '1' is current user
-    expect(messages[3]).toHaveTextContent('(You)');
+    expect(messages).toHaveLength(initialMessagesCount + 1);
+    
+    const lastMessage = messages[initialMessagesCount];
+    // Check content of the last message based on the mocked MessageList structure
+    expect(lastMessage.querySelector('.message-text')).toHaveTextContent('Test message from mock');
+    // Current user is '1' (Alice (You)) as defined in ChatApp.js
+    expect(lastMessage.querySelector('.message-sender')).toBeNull(); // Sender name not shown for current user
+    expect(lastMessage.querySelector('.message-status-ticks')).toBeInTheDocument(); // Status ticks present
+    expect(lastMessage).toHaveClass('current-user');
   });
 
   test('real-time message simulation adds a new message', () => {
     render(<ChatApp />);
-    expect(screen.getAllByTestId('message')).toHaveLength(3); // Initial messages
+    const initialMessagesCount = 3;
+    expect(screen.getAllByTestId('message')).toHaveLength(initialMessagesCount);
 
-    // Advance timers by a significant amount to trigger the interval
-    // The interval is Math.random() * 7000 + 8000
     act(() => {
-      jest.advanceTimersByTime(15000); 
+      jest.advanceTimersByTime(15000); // Interval is Math.random() * 7000 + 8000
     });
     
-    // A new message should have been added by the simulation
     const messages = screen.getAllByTestId('message');
-    expect(messages.length).toBeGreaterThanOrEqual(4); 
-    // We can't know exactly who sent it or the text due to randomness,
-    // but we can check it's not from the current user '1' (Alice)
-    // and that it has the generic structure.
+    expect(messages.length).toBeGreaterThanOrEqual(initialMessagesCount + 1); 
+    
     const lastMessage = messages[messages.length - 1];
-    expect(lastMessage).not.toHaveTextContent('Alice (You)');
-    expect(lastMessage).toHaveTextContent(/A new message from (Bob|Charlie|Diana)! \(\d+\)/);
+    // Check if the last message is from another user (not current user '1')
+    expect(lastMessage).toHaveClass('other-user');
+    expect(lastMessage.querySelector('.message-sender')).not.toBeNull(); // Sender name should be present
+    expect(lastMessage.querySelector('.message-status-ticks')).toBeNull(); // No status ticks for other users
+    expect(lastMessage.querySelector('.message-text')).toHaveTextContent(/A new message from (Bob|Charlie|Diana)! \(\d+\)/);
   });
 });
